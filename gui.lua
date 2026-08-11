@@ -6,8 +6,8 @@
 
 local imgui = require('imgui')
 local chat = require('chat')
-local bit = require('bit')
 local scaling = require('scaling')
+local colorutils = require('colorutils')
 
 local gui = {}
 
@@ -47,26 +47,6 @@ end
 
 function gui.close()
     gui.is_open[1] = false
-end
-
--- Converts a packed 0xAARRGGBB color into an {r, g, b, a} table of
--- floats in the 0..1 range, as expected by imgui.ColorEdit4.
-local function color_to_rgba(color)
-    local a = bit.band(bit.rshift(color, 24), 0xFF) / 255
-    local r = bit.band(bit.rshift(color, 16), 0xFF) / 255
-    local g = bit.band(bit.rshift(color, 8), 0xFF) / 255
-    local b = bit.band(color, 0xFF) / 255
-    return { r, g, b, a }
-end
-
--- Converts an {r, g, b, a} table of floats in the 0..1 range back into
--- a packed 0xAARRGGBB color.
-local function rgba_to_color(rgba)
-    local a = math.floor(rgba[4] * 255 + 0.5)
-    local r = math.floor(rgba[1] * 255 + 0.5)
-    local g = math.floor(rgba[2] * 255 + 0.5)
-    local b = math.floor(rgba[3] * 255 + 0.5)
-    return bit.bor(bit.lshift(a, 24), bit.lshift(r, 16), bit.lshift(g, 8), b)
 end
 
 -- gdi:get_font_available() appears to allocate a real font resource
@@ -133,16 +113,48 @@ local function draw_font_section(label, font_settings, default_settings, check_f
     imgui.Spacing()
 
     -- Colors
-    local text_color = color_to_rgba(font_settings.font_color)
+    local text_color = colorutils.to_rgba_floats(font_settings.font_color)
     if imgui.ColorEdit4('Text Color', text_color) then
-        font_settings.font_color = rgba_to_color(text_color)
+        font_settings.font_color = colorutils.from_rgba_floats(text_color)
         changed = true
     end
 
-    local outline_color = color_to_rgba(font_settings.outline_color)
+    local outline_color = colorutils.to_rgba_floats(font_settings.outline_color)
     if imgui.ColorEdit4('Outline Color', outline_color) then
-        font_settings.outline_color = rgba_to_color(outline_color)
+        font_settings.outline_color = colorutils.from_rgba_floats(outline_color)
         changed = true
+    end
+
+    imgui.Spacing()
+
+    -- Gradient. When enabled, "Text Color" above is ignored in favor of
+    -- a left-to-right blend between these two colors.
+    local gradient_enabled = { font_settings.gradient_enabled or false }
+    if imgui.Checkbox('Gradient Text Color', gradient_enabled) then
+        font_settings.gradient_enabled = gradient_enabled[1]
+        changed = true
+    end
+
+    if font_settings.gradient_enabled then
+        local grad_start = colorutils.to_rgba_floats(font_settings.gradient_start_color)
+        if imgui.ColorEdit4('Gradient Start', grad_start) then
+            font_settings.gradient_start_color = colorutils.from_rgba_floats(grad_start)
+            changed = true
+        end
+
+        local grad_end = colorutils.to_rgba_floats(font_settings.gradient_end_color)
+        if imgui.ColorEdit4('Gradient End', grad_end) then
+            font_settings.gradient_end_color = colorutils.from_rgba_floats(grad_end)
+            changed = true
+        end
+
+        local spacing = { font_settings.gradient_letter_spacing or 1.0 }
+        if imgui.SliderFloat('Letter Spacing', spacing, 0.3, 2.5) then
+            font_settings.gradient_letter_spacing = spacing[1]
+            changed = true
+        end
+        imgui.TextDisabled('If letters look wrong, adjust this until spacing looks right.')
+        imgui.TextDisabled('Character spacing is approximate, not pixel-perfect kerning.')
     end
 
     imgui.Spacing()
@@ -183,6 +195,10 @@ local function draw_font_section(label, font_settings, default_settings, check_f
         font_settings.font_color = default_settings.font_color
         font_settings.outline_color = default_settings.outline_color
         font_settings.font_family = default_settings.font_family
+        font_settings.gradient_enabled = default_settings.gradient_enabled
+        font_settings.gradient_start_color = default_settings.gradient_start_color
+        font_settings.gradient_end_color = default_settings.gradient_end_color
+        font_settings.gradient_letter_spacing = default_settings.gradient_letter_spacing
         changed = true
     end
 
@@ -211,7 +227,7 @@ function gui.draw()
         return
     end
 
-    imgui.SetNextWindowSize({ 380, 620 }, ImGuiCond_FirstUseEver)
+    imgui.SetNextWindowSize({ 380, 720 }, ImGuiCond_FirstUseEver)
     local ok, err = pcall(function()
         if imgui.Begin('Zone Name Settings', gui.is_open) then
             local changed = false
