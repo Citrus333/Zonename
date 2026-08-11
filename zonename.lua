@@ -4,10 +4,10 @@
 
 -- Define addon information
 addon.name = 'zonename'
-addon.author = 'Xenonsmurf. Japanese support and other improvements by onimitch.'
-addon.version = '2.3'
+addon.author = 'Citrus'
+addon.version = '1.1'
 addon.desc = 'Displays the zone and region name for a short time while changing zones.'
-addon.link = 'https://github.com/onimitch/ffxi-zonename'
+addon.link = 'https://github.com/Citrus333/Zonename'
 
 -- Import necessary modules and libraries
 require('common')  -- Import a common utility module
