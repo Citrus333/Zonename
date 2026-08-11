@@ -5,7 +5,7 @@ An updated version of zonename that you can change the size and placement of eac
 <img width="3233" height="748" alt="Screenshot 2026-08-10 175753" src="https://github.com/user-attachments/assets/d846f47e-1597-4798-9166-3251a45e3b19" />
 
 ## How to install:
-1. Download the latest Release from the [Releases page](https://github.com/onimitch/ffxi-zonename/releases)
+1. Download the latest Release from the [Releases page](https://github.com/citrus333/zonename/releases)
 2. Extract the **_zonename_** folder to your **_Ashita4/addons_** folder
 
 ## How to use:
