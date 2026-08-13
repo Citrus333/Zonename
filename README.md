@@ -2,7 +2,7 @@
 This addon for Ashita v4 displays the zone and region name for a short time while changing zones.
 An updated version of zonename that you can change the size and placement of each name, also the font and color and outline.
 
-<img width="3233" height="748" alt="Screenshot 2026-08-10 175753" src="https://github.com/user-attachments/assets/d846f47e-1597-4798-9166-3251a45e3b19" />
+<img width="2060" height="678" alt="Screenshot 2026-08-13 163828" src="https://github.com/user-attachments/assets/2502f0eb-6b7a-4764-961a-5341beda8b4c" />
 
 ## How to install:
 1. Download the latest Release from the [Releases page](https://github.com/citrus333/zonename/releases)
