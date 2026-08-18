@@ -13,3 +13,5 @@ An updated version of zonename that you can change the size and placement of eac
 2. Type `/addon load zonename`
 3. Type `/zonename gui`
 
+## Known Issue:
+If messing around in the settings changing the font/color and such it will stack up calls to Ashita and crash the addon and potentially other addons.  This is a limitation of Ashita and something I'm working on fixing.
